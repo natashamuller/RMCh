@@ -1,0 +1,72 @@
+
+import requests
+import time
+
+location_url = 'https://rickandmortyapi.com/api/location/'
+location_epi = 'https://rickandmortyapi.com/api/episode/'
+location_cha = 'https://rickandmortyapi.com/api/character/'
+
+inicio = time.time()  
+
+def cuenta(url_req, let):
+    r = requests.get(url = url_req)
+    n_reps = r.json()['info']['count']
+    lista_ids = str([i for i in range(1, n_reps + 1)])
+
+    r = requests.get(url = url_req + lista_ids)
+    data = r.json() 
+    contador = 0
+    for i in data:
+        for letra in i["name"].lower():
+            if letra == let:
+                contador += 1
+    
+    return contador
+
+n_locations = cuenta(location_url, 'l')
+n_episodes = cuenta(location_epi, 'e')
+n_characters = cuenta(location_cha, 'c')
+
+print("Char counter:")
+print ("Cantidad de 'e' en nombres de episodios: ",n_episodes)
+print ("Cantidad de 'l' en nombres de locations: ",n_locations)
+print ("Cantidad de 'c' en nombres de characters: ",n_characters)
+print("El tiempo de ejecución fue",time.time()-inicio,"segundos")
+print(" ")
+#Episode Locations
+
+def lista (url_req,campo,campo2):
+    r = requests.get(url = url_req)
+    n_reps = r.json()['info']['count']
+    lista_ids = str([i for i in range(1, n_reps + 1)])
+
+    r = requests.get(url = url_req + lista_ids)
+    data = r.json() 
+    lis=[]
+    lis2=[]
+    for i in data:
+        lis.append(i[campo])
+        lis2.append(i[campo2])
+    return lis,lis2
+
+def repetido (characters):
+    lista=[]
+    for cha in characters:
+        r=requests.get(cha).json()
+        if r['origin']['name'] not in lista:
+            lista.append(r['origin']['name'])
+    return lista
+
+print("Episode Locations")
+tiempo_inicial_2=time.time()
+dicc=[]
+episodes=lista(location_epi,'name','characters')
+#characters=lista(location_epi,'characters')
+for i in range(len(episodes[0])):
+    print("")
+    origin=repetido(episodes[1][i])
+    print(episodes[0][i])
+    print("Cantidad de locations:",len(origin))
+    print(origin)
+
+print("El tiempo de ejecución fue ",time.time()-tiempo_inicial_2   ,"segundos")
